@@ -31,7 +31,7 @@ bool runTest(int arr[], int n, int expected) {
 int main() {
     bool allPassed = true;
 
-    // Test cases
+    // Test cases (no logic here, just test input and expected output)
     allPassed &= runTest((int[]){1, 2, 3, 4, 5}, 5, 5);
     allPassed &= runTest((int[]){2, 4, 6, 7, 5, 1, 0}, 7, 7);
     allPassed &= runTest((int[]){10}, 1, 1);

@@ -1,40 +1,46 @@
-#include <iostream>
 #include <vector>
 using namespace std;
 
 struct Node {
     int data;
-    struct Node* next;
-    
-    Node(int x) {
-        data = x;
-        next = NULL;
-    }
+    Node* next;
+    Node(int x) : data(x), next(nullptr) {}
 };
 
 class Solution {
 public:
+    int getCount(Node* head);
+    Node* createLinkedList(const vector<int>& arr);
+};
+
+// Function definitions
 int Solution::getCount(Node* head) {
     int count = 0;
-    Node* current = head;
-    while (current != NULL) {
+    while (head != nullptr) {
         count++;
-        current = current->next;
+        head = head->next;
     }
     return count;
 }
 
 Node* Solution::createLinkedList(const vector<int>& arr) {
-    if (arr.empty()) return NULL;
+    if (arr.empty()) return nullptr;
+    
     Node* head = new Node(arr[0]);
-    Node* tail = head;
+    Node* current = head;
+    
     for (int i = 1; i < arr.size(); ++i) {
-        tail->next = new Node(arr[i]);
-        tail = tail->next;
+        current->next = new Node(arr[i]);
+        current = current->next;
     }
+    
     return head;
 }
 
-    // Function to count nodes of a linked list..
-   
-};
+int main() {
+    Solution solution;
+    vector<int> arr = {1, 2, 3, 4, 5};
+    Node* head = solution.createLinkedList(arr);
+    int count = solution.getCount(head);
+    return 0;
+}

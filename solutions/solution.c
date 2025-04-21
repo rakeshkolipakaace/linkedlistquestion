@@ -1,40 +1,43 @@
-#include <iostream> 
-using namespace std; 
-// Node for Linked List
-class Node  
-{  
-    public:
-    const char* data;  
-    Node* next;  
-};  
-// class for creating a LinkedList
-void add(Node** head_ref, const char* val)  
-{  
-    // allocating new_node
-    Node* new_node =new Node(); 
-    new_node->data = val;  
-    new_node->next = (*head_ref);  
-    (*head_ref) = new_node;  
-}  
-// Recursive function to calculate the length
-int getLength(struct Node* head) 
-{ 
-    // Base case 
-    if (head == NULL) 
-        return 0; 
-    else
-        return 1 + getLength(head->next); 
-} 
-// Main function
-int main()  
-{
-    Node* head = NULL;  
-    // adding elements in the LinkedList
-    add(&head, "A");  
-    add(&head, "B");  
-    add(&head, "C");  
-    add(&head, "D");   
-    // Printing the length of the LinkedList by calling the getLength()
-    cout<<"Length of LinkedList: "<< getLength(head);  
-    return 0;  
-}  
+#include <stddef.h>  // for NULL
+#include <stdlib.h>  // for malloc
+
+// Definition for singly-linked list node..
+struct Node {
+    int data;
+    struct Node* next;
+};
+
+// Function to create a new node
+struct Node* createNode(int data) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->data = data;
+    newNode->next = NULL;
+    return newNode;
+}
+
+// Function to create a linked list from an array
+struct Node* createLinkedList(int arr[], int n) {
+    struct Node* head = NULL;
+    struct Node* temp = NULL;
+
+    for (int i = 0; i < n; i++) {
+        struct Node* newNode = createNode(arr[i]);
+        if (head == NULL) {
+            head = newNode;
+        } else {
+            temp->next = newNode;
+        }
+        temp = newNode;
+    }
+    return head;
+}
+
+// Function to get the count of nodes
+int getCount(struct Node* head) {
+    int count = 0;
+    while (head != NULL) {
+        count++;
+        head = head->next;
+    }
+    return count;
+}

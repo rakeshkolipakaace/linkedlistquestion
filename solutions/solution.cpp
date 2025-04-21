@@ -13,7 +13,7 @@ public:
     Node* createLinkedList(const vector<int>& arr);
 };
 
-// Function definitions
+// Function definitions.
 int Solution::getCount(Node* head) {
     int count = 0;
     while (head != nullptr) {

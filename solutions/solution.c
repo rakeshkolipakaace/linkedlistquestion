@@ -1,7 +1,7 @@
 #include <stddef.h>  // for NULL
 #include <stdlib.h>  // for malloc
 
-// Definition for singly-linked list node
+// Definition for singly-linked list node.
 struct Node {
     int data;
     struct Node* next;

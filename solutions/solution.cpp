@@ -1,74 +1,37 @@
-//{ Driver Code Starts
 #include <bits/stdc++.h>
 using namespace std;
 
 struct Node {
     int data;
     struct Node *next;
-
     Node(int x) {
         data = x;
         next = NULL;
     }
 };
 
-
-// } Driver Code Ends
-
-/* Link list node */
-/*
-struct Node
-{
-    int data;
-    Node* next;
-    Node(int x) {  data = x;  next = NULL; }
-}; */
-
 class Solution {
   public:
-    // Function to count nodes of a linked list.
     int getCount(struct Node* head) {
         int count = 0;
         Node* current = head;
-
         while (current != NULL) {
             count++;
             current = current->next;
         }
-
         return count;
-
-        // Code here
     }
 };
 
+// ✅ Add this helper function
+Node* createLinkedList(const vector<int>& arr) {
+    if (arr.empty()) return NULL;
 
-
-//{ Driver Code Starts.
-
-int main() {
-    int t;
-    cin >> t;
-    cin.ignore();
-    while (t--) {
-        vector<int> arr;
-        string input;
-        getline(cin, input);
-        stringstream ss(input);
-        int number;
-        while (ss >> number) {
-            arr.push_back(number);
-        }
-        struct Node *head = new Node(arr[0]);
-        struct Node *tail = head;
-        for (int i = 1; i < arr.size(); ++i) {
-            tail->next = new Node(arr[i]);
-            tail = tail->next;
-        }
-        Solution ob;
-        cout << ob.getCount(head) << endl;
-        cout << "~" << endl;
+    Node* head = new Node(arr[0]);
+    Node* tail = head;
+    for (size_t i = 1; i < arr.size(); ++i) {
+        tail->next = new Node(arr[i]);
+        tail = tail->next;
     }
-    return 0;
+    return head;
 }
-// } Driver Code Ends

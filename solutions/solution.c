@@ -1,4 +1,4 @@
-#include <bits/stdc++.h> 
+#include <iostream> 
 using namespace std; 
 // Node for Linked List
 class Node  

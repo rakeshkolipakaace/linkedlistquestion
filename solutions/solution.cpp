@@ -1,9 +1,10 @@
-#include <bits/stdc++.h>
+#include <vector>
+#include <iostream>
 using namespace std;
 
 struct Node {
     int data;
-    struct Node *next;
+    Node* next;
     Node(int x) {
         data = x;
         next = NULL;
@@ -11,7 +12,7 @@ struct Node {
 };
 
 class Solution {
-  public:
+public:
     int getCount(struct Node* head) {
         int count = 0;
         Node* current = head;
@@ -23,10 +24,9 @@ class Solution {
     }
 };
 
-// ✅ Add this helper function
+// Define this only here, not in test.cpp
 Node* createLinkedList(const vector<int>& arr) {
     if (arr.empty()) return NULL;
-
     Node* head = new Node(arr[0]);
     Node* tail = head;
     for (size_t i = 1; i < arr.size(); ++i) {

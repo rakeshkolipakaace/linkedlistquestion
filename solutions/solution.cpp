@@ -14,7 +14,7 @@ struct Node {
 
 class Solution {
 public:
-    // Function to count nodes of a linked list.
+    // Function to count nodes of a linked list..
     int getCount(Node* head) {
         int count = 0;
         Node* current = head;

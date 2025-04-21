@@ -5,11 +5,10 @@ using namespace std;
 struct Node; // Forward declaration
 
 // Declare external functions from solution.cpp
-Node* createLinkedList(const vector<int>& arr);
-
 class Solution {
 public:
-    int getCount(struct Node* head);
+    int getCount(Node* head);
+    Node* createLinkedList(const vector<int>& arr);
 };
 
 // Helper function to print vector
@@ -25,7 +24,7 @@ void printVector(const vector<int>& vec) {
 // Test function
 bool testLinkedListCount(const vector<int>& inputList, int expectedLength) {
     Solution solution;
-    Node* head = createLinkedList(inputList);
+    Node* head = solution.createLinkedList(inputList);  // Using the method from Solution class
     int actualLength = solution.getCount(head);
 
     cout << "Input: ";

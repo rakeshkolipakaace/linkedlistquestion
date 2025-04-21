@@ -21,3 +21,6 @@ class Solution:
             current.next = Node(value)
             current = current.next
         return head
+
+
+# code

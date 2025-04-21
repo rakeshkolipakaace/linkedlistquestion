@@ -1,10 +1,11 @@
 import sys
 import os
 
-# Add the parent directory to sys.path so we can import solution.py
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+# Correct path to solutions directory
+solution_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../solutions'))
+sys.path.insert(0, solution_path)
 
-from solution import Solution, Node  # Now this will work
+from solution import Solution, Node  # This should now work
 
 def run_test(sol, input_list, expected):
     head = sol.create_linked_list(input_list)

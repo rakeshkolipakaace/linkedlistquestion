@@ -1,12 +1,16 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-// Declare functions from solution.c
+struct Node {
+    int data;
+    struct Node* next;
+};
+
+// Function declarations (from solution.c)
 extern struct Node* createNode(int data);
 extern struct Node* createLinkedList(int arr[], int n);
 extern int getCount(struct Node* head);
 
-// Function to run each test case
 bool runTest(int arr[], int n, int expected) {
     struct Node* head = createLinkedList(arr, n);
     int result = getCount(head);
@@ -16,7 +20,6 @@ bool runTest(int arr[], int n, int expected) {
 int main() {
     bool allPassed = true;
 
-    // Test cases
     allPassed &= runTest((int[]){1, 2, 3, 4, 5}, 5, 5);
     allPassed &= runTest((int[]){2, 4, 6, 7, 5, 1, 0}, 7, 7);
     allPassed &= runTest((int[]){10}, 1, 1);

@@ -36,11 +36,3 @@ Node* Solution::createLinkedList(const vector<int>& arr) {
     
     return head;
 }
-
-int main() {
-    Solution solution;
-    vector<int> arr = {1, 2, 3, 4, 5};
-    Node* head = solution.createLinkedList(arr);
-    int count = solution.getCount(head);
-    return 0;
-}

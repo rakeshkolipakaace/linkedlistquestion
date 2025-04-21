@@ -1,15 +1,8 @@
 #include <iostream>
 #include <vector>
+#include "solution.cpp"  // Include solution.cpp here, which contains the Solution class
+
 using namespace std;
-
-struct Node; // Forward declaration
-
-// Declare external functions from solution.cpp
-class Solution {
-public:
-    int getCount(Node* head);
-    Node* createLinkedList(const vector<int>& arr);
-};
 
 // Helper function to print vector
 void printVector(const vector<int>& vec) {

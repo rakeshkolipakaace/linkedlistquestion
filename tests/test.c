@@ -2,9 +2,9 @@
 #include <stdbool.h>
 
 // Declare functions from solution.c
-struct Node* createNode(int data);
-struct Node* createLinkedList(int arr[], int n);
-int getCount(struct Node* head);
+extern struct Node* createNode(int data);
+extern struct Node* createLinkedList(int arr[], int n);
+extern int getCount(struct Node* head);
 
 // Function to run each test case
 bool runTest(int arr[], int n, int expected) {

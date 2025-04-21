@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Definition for singly-linked list node
 struct Node {
     int data;
     struct Node* next;

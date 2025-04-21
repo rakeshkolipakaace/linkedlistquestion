@@ -1,7 +1,16 @@
 #include <iostream>
 #include <vector>
-#include "../solutions/solution.cpp" // This should include Node structure, Solution class, and helper to create linked list
 using namespace std;
+
+struct Node; // Forward declaration
+
+// Declare external functions from solution.cpp
+Node* createLinkedList(const vector<int>& arr);
+
+class Solution {
+public:
+    int getCount(struct Node* head);
+};
 
 // Helper function to print vector
 void printVector(const vector<int>& vec) {
@@ -10,18 +19,18 @@ void printVector(const vector<int>& vec) {
         cout << vec[i];
         if (i < vec.size() - 1) cout << ", ";
     }
-    cout << "]";
+    cout << "]\n";
 }
 
 // Test function
 bool testLinkedListCount(const vector<int>& inputList, int expectedLength) {
     Solution solution;
-    Node* head = createLinkedList(inputList);  // Assumes this helper is defined in solution.cpp
+    Node* head = createLinkedList(inputList);
     int actualLength = solution.getCount(head);
 
     cout << "Input: ";
     printVector(inputList);
-    cout << "\nExpected: " << expectedLength << "\nGot: " << actualLength << endl;
+    cout << "Expected: " << expectedLength << "\nGot: " << actualLength << endl;
 
     bool passed = (actualLength == expectedLength);
     cout << (passed ? "✅ Test Passed" : "❌ Test Failed") << "\n---------------------------------------------\n";

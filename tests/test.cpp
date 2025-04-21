@@ -1,6 +1,6 @@
 #include <iostream>
 #include <vector>
-#include "solutions/solution.cpp"  // Include solution.cpp here, which contains the Solution class
+#include "solution.cpp"  // Include the solution.cpp file to access Solution class
 
 using namespace std;
 

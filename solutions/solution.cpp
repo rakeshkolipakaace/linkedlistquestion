@@ -1,19 +1,22 @@
+#include <iostream>
 #include <vector>
 using namespace std;
 
+// Definition of Node struct
 struct Node {
     int data;
     Node* next;
     Node(int x) : data(x), next(nullptr) {}
 };
 
+// Definition of Solution class
 class Solution {
 public:
     int getCount(Node* head);
     Node* createLinkedList(const vector<int>& arr);
 };
 
-// Function definitions.
+// Function definitions for Solution class
 int Solution::getCount(Node* head) {
     int count = 0;
     while (head != nullptr) {

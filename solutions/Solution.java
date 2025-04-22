@@ -15,7 +15,7 @@ class Solution {
         
         // Traverse the linked list
         while (current != null) {
-            count++; // Increment count for each node
+            count++; 
             current = current.next;
         }
         

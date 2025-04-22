@@ -64,8 +64,8 @@ jobs:
                   echo "$IMPLEMENTATION"
                   LINE_COUNT=$(echo "$IMPLEMENTATION" | grep -vE '^\s*$' | wc -l)
                   echo "Line count: $LINE_COUNT"
-                  # Check if the method is completely empty or lacks a return statement for non-void methods
-                  RETURN_TYPE=$(echo "$line" | grep -oE 'public\s+([a-zA-Z_][a-zA-Z0-9_]*(\[\])?)\s+\w+\s*\(' | grep -oE '([a-zA-Z_][a-zA-Z0-9_]*(\[\])?)')
+                  # Extract the return type accurately
+                  RETURN_TYPE=$(echo "$line" | grep -oE 'public\s+([a-zA-Z_][a-zA-Z0-9_]*(\[\])?)\s+\w+\s*\(' | grep -oE '[a-zA-Z_][a-zA-Z0-9_]*(\[\])?' | head -n 1)
                   echo "Return type: $RETURN_TYPE"
                   if [ "$RETURN_TYPE" != "void" ] && ! echo "$IMPLEMENTATION" | grep -qE '^\s*return\s'; then
                     echo "Non-void method lacks return statement"

@@ -13,7 +13,7 @@ public class Solution {
         }
     }
 
-    // Method to get the length of a linked list
+    // Method to get the length of a linked list1
     public static int getLength(Node head) {
         int count = 0;
         while (head != null) {

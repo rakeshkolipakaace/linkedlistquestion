@@ -1,37 +1,64 @@
+// tests/test.c
+
 #include <stdio.h>
-#include <stdbool.h>
+#include <stdlib.h>
+#include "../solutions/solution.c"  // Include the solution file
 
-struct Node {
-    int data;
-    struct Node* next;
-};
+// Helper function to create a linked list with n nodes
+struct Node* createList(int n) {
+    if (n <= 0) return NULL;
 
-// Function declarations (from solution.c)
-extern struct Node* createNode(int data);
-extern struct Node* createLinkedList(int arr[], int n);
-extern int getCount(struct Node* head);
+    struct Node* head = (struct Node*)malloc(sizeof(struct Node));
+    head->data = 1;
+    head->next = NULL;
 
-bool runTest(int arr[], int n, int expected) {
-    struct Node* head = createLinkedList(arr, n);
-    int result = getCount(head);
-    return result == expected;
+    struct Node* current = head;
+    for (int i = 2; i <= n; i++) {
+        struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+        newNode->data = i;
+        newNode->next = NULL;
+        current->next = newNode;
+        current = newNode;
+    }
+    return head;
 }
-//
-int main() {
-    bool allPassed = true;
 
-    allPassed &= runTest((int[]){1, 2, 3, 4, 5}, 5, 5);
-    allPassed &= runTest((int[]){2, 4, 6, 7, 5, 1, 0}, 7, 7);
-    allPassed &= runTest((int[]){10}, 1, 1);
-    allPassed &= runTest((int[]){5, 15, 25, 35, 45, 55}, 6, 6);
-    allPassed &= runTest((int[]){1000, 999, 998}, 3, 3);
-    allPassed &= runTest((int[]){103}, 1, 1);
+// Free memory allocated to linked list
+void freeList(struct Node* head) {
+    while (head) {
+        struct Node* temp = head;
+        head = head->next;
+        free(temp);
+    }
+}
 
-    if (allPassed) {
-        printf("🎉 All test cases passed!\n");
+// Run a single test case
+int runTest(int testNumber, int nodes, int expected) {
+    struct Node* head = createList(nodes);
+    int result = getLength(head);
+    int passed = result == expected;
+
+    if (passed) {
+        printf("✅ Test Case %d Passed: Expected = %d, Got = %d\n", testNumber, expected, result);
     } else {
-        printf("❌ Some test cases failed!\n");
+        printf("❌ Test Case %d Failed: Expected = %d, Got = %d\n", testNumber, expected, result);
     }
 
-    return 0;
+    freeList(head);
+    return passed;
+}
+
+// Main test runner
+int main() {
+    int passed = 0;
+    int total = 5;
+
+    passed += runTest(1, 0, 0);   // Empty list
+    passed += runTest(2, 1, 1);   // Single node
+    passed += runTest(3, 3, 3);   // Small list
+    passed += runTest(4, 5, 5);   // Medium list
+    passed += runTest(5, 10, 10); // Longer list
+
+    printf("\nSummary: ✅ %d / %d test cases passed.\n", passed, total);
+    return passed == total ? 0 : 1;
 }

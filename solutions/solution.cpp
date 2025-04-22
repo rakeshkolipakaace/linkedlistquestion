@@ -9,7 +9,7 @@ struct Node {
     Node(int x) : data(x), next(nullptr) {}
 };
 
-// Definition of Solution class
+// Definition of Solution class..
 class Solution {
 public:
     int getCount(Node* head);

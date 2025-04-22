@@ -1,28 +1,15 @@
-class Node:
-    def __init__(self, data):
-        self.data = data
-        self.next = None
+# Linked list class
+class LinkedList:
+    def __init__(self):
+        self.head = None
+        self.tail = None
 
 class Solution:
+    # Function to count nodes of a linked list.
     def getCount(self, head):
-       # here the default return value is 0
-       #so after you write the you can change the return value
-       
-        
-#
-   #qq
-   
-   
-   #the below code is also a question so dont change the below code .
-    def create_linked_list(self, arr):
-        if not arr:
-            return None
-        head = Node(arr[0])
+        count = 0
         current = head
-        for value in arr[1:]:
-            current.next = Node(value)
+        while current:
+            count += 1
             current = current.next
-        return head
-
-
-# code here a
+        return count

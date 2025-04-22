@@ -32,7 +32,7 @@ class Solution {
         // Traverse the linked list
         while (current != null) {
             count++; // Increment count for each node
-            current = current.next; // Move to the next node
+            current = current.next; 
         }
         
         return count; 

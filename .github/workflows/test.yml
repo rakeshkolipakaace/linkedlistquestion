@@ -1,58 +1,125 @@
-name: Run Tests if Return Exists
+name: Run Code Tests
 
 on:
   push:
     paths:
-      - 'solutions/**'
-      - 'tests/**'
+      - "solutions/**"
+  pull_request:
+    paths:
+      - "solutions/**"
 
 jobs:
-  check-and-test:
+  run-tests:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v3
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
 
-    - name: Check for 'return' in Solutions
-      id: check_return
-      run: |
-        echo "checking files..."
-        result=""
-
-        for lang in c cpp java py; do
-          file="solutions/solution.$lang"
-          if [ -f "$file" ]; then
-            if grep -q "return" "$file"; then
-              echo "$lang=true" >> $GITHUB_ENV
-              result="${result}1"
-            else
-              echo "$lang=false" >> $GITHUB_ENV
-              result="${result}0"
-            fi
+      - name: Detect Changed Files
+        id: changed-files
+        run: |
+          BEFORE_COMMIT="${{ github.event.before }}"
+          if [ -z "$BEFORE_COMMIT" ] || ! git cat-file -e "$BEFORE_COMMIT"^{commit}; then
+            BEFORE_COMMIT=$(git rev-parse HEAD~1)
           fi
-        done
+          CHANGED_FILES=$(git diff --name-only "$BEFORE_COMMIT" HEAD | grep '^solutions/')
+          echo "CHANGED_FILES=$(echo "$CHANGED_FILES" | tr '\n' ' ')" >> $GITHUB_ENV
 
-        echo "result=$result" >> $GITHUB_OUTPUT
+      - name: Check for Return Statements
+        id: check-return
+        run: |
+          MISSING_RETURN_FILES=""
+          for file in $CHANGED_FILES; do
+            echo "Checking file: $file"
+            EXT="${file##*.}"
+            if [ "$EXT" = "c" ] || [ "$EXT" = "cpp" ] || [ "$EXT" = "java" ]; then
+              if ! grep -qE '\breturn\b' "$file"; then
+                MISSING_RETURN_FILES="$MISSING_RETURN_FILES $file"
+              fi
+            elif [ "$EXT" = "py" ]; then
+              if ! grep -qE '^\s*return\b' "$file"; then
+                MISSING_RETURN_FILES="$MISSING_RETURN_FILES $file"
+              fi
+            fi
+          done
 
-    - name: Run C Test
-      if: env.c == 'true'
-      run: |
-        gcc solutions/solution.c tests/test.c -o test_c
-        ./test_c
+          if [ -n "$MISSING_RETURN_FILES" ]; then
+            echo "No return statement found in: $MISSING_RETURN_FILES"
+            exit 1
+          fi
 
-    - name: Run C++ Test
-      if: env.cpp == 'true'
-      run: |
-        g++ solutions/solution.cpp tests/test.cpp -o test_cpp
-        ./test_cpp
+      - name: Determine File Type
+        id: determine-file
+        run: |
+          DETECTED_LANGUAGES=""
+          for file in $CHANGED_FILES; do
+            case "$file" in
+              *.c) DETECTED_LANGUAGES="${DETECTED_LANGUAGES}C " ;;
+              *.cpp) DETECTED_LANGUAGES="${DETECTED_LANGUAGES}C++ " ;;
+              *.py) DETECTED_LANGUAGES="${DETECTED_LANGUAGES}Python " ;;
+              *.java) DETECTED_LANGUAGES="${DETECTED_LANGUAGES}Java " ;;
+            esac
+          done
+          DETECTED_LANGUAGES=$(echo "$DETECTED_LANGUAGES" | xargs | sort -u)
+          echo "LANGUAGE=$DETECTED_LANGUAGES" >> $GITHUB_ENV
 
-    - name: Run Java Test
-      if: env.java == 'true'
-      run: |
-        javac solutions/solution.java tests/test.java
-        java test
+      - name: Update Package Lists
+        if: contains(env.LANGUAGE, 'C') || contains(env.LANGUAGE, 'C++') || contains(env.LANGUAGE, 'Python') || contains(env.LANGUAGE, 'Java')
+        run: sudo apt update
 
-    - name: Run Python Test
-      if: env.py == 'true'
-      run: |
-        python3 tests/test.py
+      - name: Install C Dependencies
+        if: contains(env.LANGUAGE, 'C')
+        run: sudo apt install -y gcc
+
+      - name: Install C++ Dependencies
+        if: contains(env.LANGUAGE, 'C++')
+        run: sudo apt install -y g++
+
+      - name: Install Python Dependencies
+        if: contains(env.LANGUAGE, 'Python')
+        run: sudo apt install -y python3
+
+      - name: Install Java Dependencies
+        if: contains(env.LANGUAGE, 'Java')
+        run: sudo apt install -y openjdk-17-jdk-headless
+
+      - name: Compile and Run C Tests
+        if: contains(env.LANGUAGE, 'C')
+        run: |
+          if [ -f tests/test.c ]; then
+            gcc tests/test.c solutions/solution.c -o test_runner
+            ./test_runner | tee -a test_results.log
+          else
+            echo "No C test file found."
+          fi
+
+      - name: Compile and Run C++ Tests
+        if: contains(env.LANGUAGE, 'C++')
+        run: |
+          if [ -f tests/test.cpp ]; then
+            g++ tests/test.cpp solutions/solution.cpp -o test_runner
+            ./test_runner | tee -a test_results.log
+          else
+            echo "No C++ test file found."
+          fi
+
+      - name: Run Python Tests
+        if: contains(env.LANGUAGE, 'Python')
+        run: |
+          if [ -f tests/test.py ]; then
+            python3 tests/test.py | tee -a test_results.log
+          else
+            echo "No Python test file found."
+          fi
+
+      - name: Compile and Run Java Tests
+        if: contains(env.LANGUAGE, 'Java')
+        run: |
+          if [ -f tests/Test.java ]; then
+            javac tests/Test.java solutions/Solution.java
+            java -cp tests Test | tee -a test_results.log
+          else
+            echo "No Java test file found."
+          fi

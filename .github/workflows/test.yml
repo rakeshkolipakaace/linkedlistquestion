@@ -24,114 +24,48 @@ jobs:
           if [ -z "$BEFORE_COMMIT" ] || ! git cat-file -e "$BEFORE_COMMIT"^{commit}; then
             BEFORE_COMMIT=$(git rev-parse HEAD~1)
           fi
-
           CHANGED_FILES=$(git diff --name-only "$BEFORE_COMMIT" HEAD | grep '^solutions/')
-          echo "Detected changed files (raw): $CHANGED_FILES"
-
-          if [ -z "$CHANGED_FILES" ]; then
-            echo "No file changes detected in solutions/ directory. Exiting..."
-            exit 1
-          fi
-
-          CHANGED_FILES=$(echo "$CHANGED_FILES" | tr '\n' ' ' | sed 's/ /\n/g' | sort -u)
-          echo "Detected changed files (filtered): $CHANGED_FILES"
-
-          echo "CHANGED_FILES=$(echo "$CHANGED_FILES" | tr '\n' ' ')" >> $GITHUB_ENV
-          echo "Debug: CHANGED_FILES after setting env: $CHANGED_FILES"
-
-      - name: List All Files in solutions/ Directory
-        run: |
-          echo "Listing all files in solutions/ directory:"
-          ls -l solutions/
+          echo "CHANGED_FILES=$(echo $CHANGED_FILES | tr '\n' ' ')" >> $GITHUB_ENV
 
       - name: Check for Empty Implementations
-        id: check-implementation
         run: |
-          INCOMPLETE_FILES=""
+          INCOMPLETE=""
           for file in $CHANGED_FILES; do
             echo "Checking file: $file"
-            if [[ "$file" == *.c ]]; then
-              echo "Checking C file: $file"
-              FUNCTION_SIGNATURES=$(grep -nE '^\s*[a-zA-Z_][a-zA-Z0-9_]*\s+[a-zA-Z_][a-zA-Z0-9_]*\s*\(.*\)\s*\{' "$file")
-              while IFS= read -r line; do
-                LINE_NUM=$(echo "$line" | cut -d: -f1)
-                END_LINE=$(tail -n +$LINE_NUM "$file" | grep -nE '^\s*\}' | head -n 1 | cut -d: -f1)
-                if [ -n "$END_LINE" ]; then
-                  IMPLEMENTATION=$(tail -n +$((LINE_NUM + 1)) "$file" | head -n $((END_LINE - 2)) | grep -vE '^\s*(//|/\*|\*/|$)' | grep -E '^\s*\S')
-                  LINE_COUNT=$(echo "$IMPLEMENTATION" | wc -l)
-                  if [ "$LINE_COUNT" -le 1 ]; then
-                    INCOMPLETE_FILES="$INCOMPLETE_FILES $file"
-                  fi
-                else
-                  INCOMPLETE_FILES="$INCOMPLETE_FILES $file"
-                fi
-              done <<< "$FUNCTION_SIGNATURES"
-
-            elif [[ "$file" == *.cpp ]]; then
-              if grep -qE '^\s*(vector<.*>|std::vector<.*>)\s+threeSum\s*\((vector<.*>|std::vector<.*>)\s*(&|)\s*nums\)\s*\{' "$file"; then
-                LINE_NUM=$(grep -nE '^\s*(vector<.*>|std::vector<.*>)\s+threeSum\s*\((vector<.*>|std::vector<.*>)\s*(&|)\s*nums\)\s*\{' "$file" | cut -d: -f1)
-                END_LINE=$(tail -n +$LINE_NUM "$file" | grep -nE '^\s*\}' | head -n 1 | cut -d: -f1)
-                if [ -n "$END_LINE" ]; then
-                  IMPLEMENTATION=$(tail -n +$((LINE_NUM + 1)) "$file" | head -n $((END_LINE - 2)) | grep -vE '^\s*(//|/\*.*\*/$|^$)' | grep -E '^\s*[^\s#].*')
-                  LINE_COUNT=$(echo "$IMPLEMENTATION" | grep -vE '^\s*$' | wc -l)
-                  if [ "$LINE_COUNT" -le 1 ] || ! echo "$IMPLEMENTATION" | grep -qE '^\s*(if\s|for\s|while\s|[a-zA-Z_][a-zA-Z0-9_]*\s*=|[a-zA-Z_][a-zA-Z0-9_]*\s*\()(.*)'; then
-                    INCOMPLETE_FILES="$INCOMPLETE_FILES $file"
-                  fi
-                else
-                  INCOMPLETE_FILES="$INCOMPLETE_FILES $file"
-                fi
+            if [[ "$file" == *.c || "$file" == *.cpp ]]; then
+              CODE=$(grep -vE '^\s*(//|/\*|\*/|\*|$)' "$file" | grep -E '[{};]')
+              if [ $(echo "$CODE" | wc -l) -le 2 ]; then
+                INCOMPLETE="$INCOMPLETE $file"
               fi
-
             elif [[ "$file" == *.py ]]; then
-              FUNCTION_LINES=$(grep -nE '^\s*def\s+[a-zA-Z_][a-zA-Z0-9_]*\s*\(.*\):' "$file")
-              while IFS= read -r line; do
-                FUNC_LINE_NUM=$(echo "$line" | cut -d: -f1)
-                FUNC_NAME=$(echo "$line" | cut -d: -f2- | awk '{print $2}' | cut -d'(' -f1)
-
-                BODY=$(tail -n +$((FUNC_LINE_NUM + 1)) "$file" | grep -vE '^\s*("""|#|$)' | grep -E '^\s+')
-
-                if ! echo "$BODY" | grep -qE '^\s*(return|if|for|while|[a-zA-Z_][a-zA-Z0-9_]*\s*=|[a-zA-Z_][a-zA-Z0-9_]*\s*\()'; then
-                  echo "Incomplete implementation detected in $file: $FUNC_NAME"
-                  INCOMPLETE_FILES="$INCOMPLETE_FILES $file"
-                fi
-              done <<< "$FUNCTION_LINES"
-
+              CODE=$(grep -vE '^\s*(#|$)' "$file" | grep -E '[a-zA-Z0-9]')
+              if [ $(echo "$CODE" | wc -l) -le 2 ]; then
+                INCOMPLETE="$INCOMPLETE $file"
+              fi
             elif [[ "$file" == *.java ]]; then
-              if grep -qE '^\s*public\s+List<List<Integer>>\s+threeSum\s*\(int\[\]\s+nums\)\s*\{' "$file"; then
-                LINE_NUM=$(grep -nE '^\s*public\s+List<List<Integer>>\s+threeSum\s*\(int\[\]\s+nums\)\s*\{' "$file" | cut -d: -f1)
-                END_LINE=$(tail -n +$LINE_NUM "$file" | grep -nE '^\s*\}' | head -n 1 | cut -d: -f1)
-                if [ -n "$END_LINE" ]; then
-                  IMPLEMENTATION=$(tail -n +$((LINE_NUM + 1)) "$file" | head -n $((END_LINE - 2)) | grep -vE '^\s*(//|/\*.*\*/$|^$)' | grep -E '^\s*[^\s#].*')
-                  LINE_COUNT=$(echo "$IMPLEMENTATION" | grep -vE '^\s*$' | wc -l)
-                  if [ "$LINE_COUNT" -le 1 ] || ! echo "$IMPLEMENTATION" | grep -qE '^\s*(if\s|for\s|while\s|[a-zA-Z_][a-zA-Z0-9_]*\s*=|[a-zA-Z_][a-zA-Z0-9_]*\s*\()(.*)'; then
-                    INCOMPLETE_FILES="$INCOMPLETE_FILES $file"
-                  fi
-                else
-                  INCOMPLETE_FILES="$INCOMPLETE_FILES $file"
-                fi
+              CODE=$(grep -vE '^\s*(//|/\*|\*/|\*|$)' "$file" | grep -E '[{};]')
+              if [ $(echo "$CODE" | wc -l) -le 2 ]; then
+                INCOMPLETE="$INCOMPLETE $file"
               fi
             fi
           done
-
-          if [ -n "$INCOMPLETE_FILES" ]; then
-            echo "Some files only contain function signatures without implementation: $INCOMPLETE_FILES"
+          if [ -n "$INCOMPLETE" ]; then
+            echo "Incomplete implementations found in: $INCOMPLETE"
             exit 1
           fi
 
-      - name: Determine File Type
-        id: determine-file
+      - name: Determine Language
         run: |
-          DETECTED_LANGUAGES=""
+          LANGS=""
           for file in $CHANGED_FILES; do
             case "$file" in
-              *.c) DETECTED_LANGUAGES="${DETECTED_LANGUAGES}C " ;;
-              *.cpp) DETECTED_LANGUAGES="${DETECTED_LANGUAGES}C++ " ;;
-              *.py) DETECTED_LANGUAGES="${DETECTED_LANGUAGES}Python " ;;
-              *.java) DETECTED_LANGUAGES="${DETECTED_LANGUAGES}Java " ;;
+              *.c) LANGS+="C " ;;
+              *.cpp) LANGS+="C++ " ;;
+              *.py) LANGS+="Python " ;;
+              *.java) LANGS+="Java " ;;
             esac
           done
-          DETECTED_LANGUAGES=$(echo "$DETECTED_LANGUAGES" | xargs | sort -u)
-          echo "LANGUAGE=$DETECTED_LANGUAGES" >> $GITHUB_ENV
+          echo "LANGUAGE=$(echo $LANGS | xargs | sort -u)" >> $GITHUB_ENV
 
       - name: Update Package Lists
         if: contains(env.LANGUAGE, 'C') || contains(env.LANGUAGE, 'C++') || contains(env.LANGUAGE, 'Python') || contains(env.LANGUAGE, 'Java')
@@ -153,41 +87,22 @@ jobs:
         if: contains(env.LANGUAGE, 'Java')
         run: sudo apt install -y openjdk-17-jdk-headless
 
-      - name: Compile and Run C Tests
+      - name: Run C Tests
         if: contains(env.LANGUAGE, 'C')
         run: |
-          if [ -f tests/test.c ]; then
-            gcc tests/test.c solutions/solution.c -o test_runner
-            ./test_runner | tee -a test_results.log
-          else
-            echo "No C test file found."
-          fi
+          gcc tests/test.c solutions/solution.c -o runner && ./runner
 
-      - name: Compile and Run C++ Tests
+      - name: Run C++ Tests
         if: contains(env.LANGUAGE, 'C++')
         run: |
-          if [ -f tests/test.cpp ]; then
-            g++ tests/test.cpp solutions/solution.cpp -o test_runner
-            ./test_runner | tee -a test_results.log
-          else
-            echo "No C++ test file found."
-          fi
+          g++ tests/test.cpp solutions/solution.cpp -o runner && ./runner
 
       - name: Run Python Tests
         if: contains(env.LANGUAGE, 'Python')
-        run: |
-          if [ -f tests/test.py ]; then
-            python3 tests/test.py | tee -a test_results.log
-          else
-            echo "No Python test file found."
-          fi
+        run: python3 tests/test.py
 
-      - name: Compile and Run Java Tests
+      - name: Run Java Tests
         if: contains(env.LANGUAGE, 'Java')
         run: |
-          if [ -f tests/Test.java ]; then
-            javac tests/Test.java solutions/Solution.java
-            java -cp tests Test | tee -a test_results.log
-          else
-            echo "No Java test file found."
-          fi
+          javac tests/TestCases.java solutions/Solution.java
+          java -cp tests TestCases

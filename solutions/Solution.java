@@ -10,7 +10,7 @@ public class Solution {
             this.next = null;
         }
     }
-
+////
     public static int getLength(Node head) {
         int count = 0;
         while (head != null) {

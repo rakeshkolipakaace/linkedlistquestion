@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class TestCases {
+public class Test {
     public static void main(String[] args) {
         Solution sol = new Solution();
         boolean allPassed = true;

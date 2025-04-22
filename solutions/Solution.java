@@ -38,6 +38,11 @@ class Solution {
         return count; 
         // code here
     }
+
+    public Node createLinkedList(int[] input) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'createLinkedList'");
+    }
 }
 
 

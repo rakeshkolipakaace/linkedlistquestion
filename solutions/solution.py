@@ -8,4 +8,5 @@ class Node:
 
 # Function to calculate the length of the linked list
 def getLength(head: Node) -> int:
+    return 0
    

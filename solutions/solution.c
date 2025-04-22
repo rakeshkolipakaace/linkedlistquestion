@@ -8,7 +8,7 @@ struct Node {
     struct Node* next;
 };
 
-// Function to calculate the length of the linked list
+// Function to calculate the length of the linked list2
 int getLength(struct Node* head) {
     int count = 0;
     while (head != NULL) {

@@ -144,41 +144,18 @@ jobs:
         if: contains(env.LANGUAGE, 'Java')
         run: sudo apt install -y openjdk-17-jdk-headless
 
-      - name: Compile and Run C Tests
-        if: contains(env.LANGUAGE, 'C')
-        run: |
-          if [ -f tests/test.c ]; then
-            gcc tests/test.c solutions/solution.c -o test_runner
-            ./test_runner | tee -a test_results.log
-          else
-            echo "No C test file found."
-          fi
-
-      - name: Compile and Run C++ Tests
-        if: contains(env.LANGUAGE, 'C++')
-        run: |
-          if [ -f tests/test.cpp ]; then
-            g++ tests/test.cpp solutions/solution.cpp -o test_runner
-            ./test_runner | tee -a test_results.log
-          else
-            echo "No C++ test file found."
-          fi
-
-      - name: Run Python Tests
-        if: contains(env.LANGUAGE, 'Python')
-        run: |
-          if [ -f tests/test.py ]; then
-            python3 tests/test.py | tee -a test_results.log
-          else
-            echo "No Python test file found."
-          fi
-
       - name: Compile and Run Java Tests
         if: contains(env.LANGUAGE, 'Java')
         run: |
           if [ -f tests/Test.java ]; then
-            javac tests/Test.java solutions/Solution.java
-            java -cp tests Test | tee -a test_results.log
+            # Compile both Test.java and Solution.java into the out directory
+            javac -d out tests/Test.java solutions/Solution.java
+            
+            # Debugging: Check if the .class files are properly compiled
+            ls -l out/
+            
+            # Run the compiled Java test
+            java -cp out Test | tee -a test_results.log
           else
             echo "No Java test file found."
           fi

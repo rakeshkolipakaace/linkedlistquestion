@@ -139,7 +139,7 @@ jobs:
         if: env.RUN_JAVA == '1' && env.SOLUTION_COUNT == '1'
         run: |
           echo "🚀 Running Java Test Cases..."
-          javac -d . tests/Test.java
+          javac -d . solutions/Solution.java tests/Test.java
           java tests.Test
 
       - name: Upload Test Results (Python only)

@@ -1,11 +1,9 @@
-// tests/TestCases.java
+package tests;
 
 import solutions.Solution;
 import solutions.Solution.Node;
 
 public class Test {
-
-    // Helper method to create a linked list with n nodes
     public static Node createList(int n) {
         if (n <= 0) return null;
 
@@ -19,7 +17,6 @@ public class Test {
         return head;
     }
 
-    // Run a single test case
     public static boolean runTest(int testNumber, int nodes, int expected) {
         Node head = createList(nodes);
         int result = Solution.getLength(head);

@@ -7,6 +7,7 @@ class Solution:
     def getCount(self, head):
        # here the default return value is 0
        #so after you write the you can change the return value
+       
         
 
    

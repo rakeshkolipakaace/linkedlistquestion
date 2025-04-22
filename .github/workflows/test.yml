@@ -66,6 +66,7 @@ jobs:
                   INCOMPLETE_FILES="$INCOMPLETE_FILES $file"
                 fi
               done <<< "$FUNCTION_SIGNATURES"
+
             elif [[ "$file" == *.cpp ]]; then
               if grep -qE '^\s*(vector<.*>|std::vector<.*>)\s+threeSum\s*\((vector<.*>|std::vector<.*>)\s*(&|)\s*nums\)\s*\{' "$file"; then
                 LINE_NUM=$(grep -nE '^\s*(vector<.*>|std::vector<.*>)\s+threeSum\s*\((vector<.*>|std::vector<.*>)\s*(&|)\s*nums\)\s*\{' "$file" | cut -d: -f1)
@@ -80,13 +81,21 @@ jobs:
                   INCOMPLETE_FILES="$INCOMPLETE_FILES $file"
                 fi
               fi
+
             elif [[ "$file" == *.py ]]; then
-              if grep -qE '^\s*def\s+threeSum\s*\(self,\s*nums\):' "$file"; then
-                LINE_NUM=$(grep -nE '^\s*def\s+threeSum\s*\(self,\s*nums\):' "$file" | cut -d: -f1)
-                if ! tail -n +$LINE_NUM "$file" | grep -vE '^\s*("""|\#)' | grep -qE '^\s*(return\s|if\s|for\s|while\s|[a-zA-Z_][a-zA-Z0-9_]*\s*=|[a-zA-Z_][a-zA-Z0-9_]*\s*\()(.*)'; then
+              FUNCTION_LINES=$(grep -nE '^\s*def\s+[a-zA-Z_][a-zA-Z0-9_]*\s*\(.*\):' "$file")
+              while IFS= read -r line; do
+                FUNC_LINE_NUM=$(echo "$line" | cut -d: -f1)
+                FUNC_NAME=$(echo "$line" | cut -d: -f2- | awk '{print $2}' | cut -d'(' -f1)
+
+                BODY=$(tail -n +$((FUNC_LINE_NUM + 1)) "$file" | grep -vE '^\s*("""|#|$)' | grep -E '^\s+')
+
+                if ! echo "$BODY" | grep -qE '^\s*(return|if|for|while|[a-zA-Z_][a-zA-Z0-9_]*\s*=|[a-zA-Z_][a-zA-Z0-9_]*\s*\()'; then
+                  echo "Incomplete implementation detected in $file: $FUNC_NAME"
                   INCOMPLETE_FILES="$INCOMPLETE_FILES $file"
                 fi
-              fi
+              done <<< "$FUNCTION_LINES"
+
             elif [[ "$file" == *.java ]]; then
               if grep -qE '^\s*public\s+List<List<Integer>>\s+threeSum\s*\(int\[\]\s+nums\)\s*\{' "$file"; then
                 LINE_NUM=$(grep -nE '^\s*public\s+List<List<Integer>>\s+threeSum\s*\(int\[\]\s+nums\)\s*\{' "$file" | cut -d: -f1)

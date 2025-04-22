@@ -8,8 +8,4 @@ class Node:
 
 # Function to calculate the length of the linked list
 def getLength(head: Node) -> int:
-    count = 0
-    while head is not None:
-        count += 1
-        head = head.next
-    return count
+   

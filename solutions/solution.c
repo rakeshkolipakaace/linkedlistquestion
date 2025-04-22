@@ -10,5 +10,7 @@ struct Node {
 
 // Function to calculate the length of the linked list
 int getLength(struct Node* head) {
+
+    // write your code here 
    
 }

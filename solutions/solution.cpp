@@ -13,4 +13,5 @@ struct Node {
 // Function to calculate the length of the linked list13
 int getLength(Node* head) {
     
+    return 0;
 }

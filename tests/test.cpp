@@ -1,7 +1,8 @@
 // tests/test.cpp
 
 #include <iostream>
-#include "../solutions/solution.cpp"  // Include the solution file
+#include <cstdlib>
+#include "../solutions/solution.cpp" // Include the solution directly
 
 using namespace std;
 

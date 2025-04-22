@@ -61,8 +61,11 @@ jobs:
                   # Extract the implementation between the method signature and closing brace
                   IMPLEMENTATION=$(tail -n +$((LINE_NUM + 1)) "$file" | head -n $((END_LINE - 2)) | grep -vE '^\s*(//|/\*.*\*/$|^$)' | grep -E '^\s*[^\s#].*')
                   LINE_COUNT=$(echo "$IMPLEMENTATION" | grep -vE '^\s*$' | wc -l)
-                  # Check if the implementation is empty or lacks meaningful logic
-                  if [ "$LINE_COUNT" -le 1 ] || ! echo "$IMPLEMENTATION" | grep -qE '^\s*(if\s|for\s|while\s|return\s|[a-zA-Z_][a-zA-Z0-9_]*\s*=|[a-zA-Z_][a-zA-Z0-9_]*\s*\()(.*)'; then
+                  # Check if the method is completely empty or lacks a return statement for non-void methods
+                  RETURN_TYPE=$(echo "$line" | grep -oE 'public\s+([a-zA-Z_][a-zA-Z0-9_]*(\[\])?)\s+\w+\s*\(' | grep -oE '([a-zA-Z_][a-zA-Z0-9_]*(\[\])?)')
+                  if [ "$RETURN_TYPE" != "void" ] && ! echo "$IMPLEMENTATION" | grep -qE '^\s*return\s'; then
+                    INCOMPLETE_FILES="$INCOMPLETE_FILES $file"
+                  elif [ "$LINE_COUNT" -le 1 ] || ! echo "$IMPLEMENTATION" | grep -qE '^\s*(if\s|for\s|while\s|return\s|[a-zA-Z_][a-zA-Z0-9_]*\s*=|[a-zA-Z_][a-zA-Z0-9_]*\s*\()(.*)'; then
                     INCOMPLETE_FILES="$INCOMPLETE_FILES $file"
                   fi
                 else
@@ -103,7 +106,7 @@ jobs:
               if grep -qE '^\s*def\s+threeSum\s*\(self,\s*nums\):' "$file"; then
                 LINE_NUM=$(grep -nE '^\s*def\s+threeSum\s*\(self,\s*nums\):' "$file" | cut -d: -f1)
                 if ! tail -n +$LINE_NUM "$file" | grep -vE '^\s*("""|\#)' | grep -qE '^\s*(return\s|if\s|for\s|while\s|[a-zA-Z_][a-zA-Z0-9_]*\s*=|[a-zA-Z_][a-zA-Z0-9_]*\s*\()(.*)'; then
-                  INCOMPLETE_FILES="$INCOMPLETE_FILES $file"
+                    INCOMPLETE_FILES="$INCOMPLETE_FILES $file"
                 fi
               fi
             fi

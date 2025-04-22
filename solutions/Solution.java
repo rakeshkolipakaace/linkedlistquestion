@@ -22,7 +22,6 @@ class Solution {
         return count; 
     }
 
-    // Function to create linked list from an array
     public Node createLinkedList(int[] input) {
         if (input.length == 0) return null;
         

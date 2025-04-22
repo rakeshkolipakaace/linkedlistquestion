@@ -26,13 +26,17 @@ class Node{
 class Solution {
     // Function to count nodes of a linked list.
     public int getCount(Node head) {
-        return 0;
+         int count = 0; // Initialize count to 0
+        Node current = head; // Start from the head node
+        
+        // Traverse the linked list
+        while (current != null) {
+            count++; // Increment count for each node
+            current = current.next; // Move to the next node
+        }
+        
+        return count; 
         // code here
-    }
-
-    public Node createLinkedList(int[] input) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'createLinkedList'");
     }
 }
 

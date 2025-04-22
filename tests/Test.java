@@ -3,7 +3,7 @@
 import solutions.Solution;
 import solutions.Solution.Node;
 
-public class TestCases {
+public class Test {
 
     // Helper method to create a linked list with n nodes
     public static Node createList(int n) {

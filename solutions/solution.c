@@ -8,7 +8,7 @@ struct Node {
     struct Node* next;
 };
 
-// Function to calculate the length of the linked li123
+// Function to calculate the length of the linked li123w
 int getLength(struct Node* head) {
     int count = 0;
     while (head != NULL) {

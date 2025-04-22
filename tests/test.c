@@ -16,7 +16,7 @@ bool runTest(int arr[], int n, int expected) {
     int result = getCount(head);
     return result == expected;
 }
-
+//
 int main() {
     bool allPassed = true;
 

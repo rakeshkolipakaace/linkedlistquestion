@@ -12,10 +12,5 @@ struct Node {
 
 // Function to calculate the length of the linked list13
 int getLength(Node* head) {
-    int count = 0;
-    while (head != nullptr) {
-        count++;
-        head = head->next;
-    }
-    return count;
+    
 }

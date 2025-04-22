@@ -10,10 +10,5 @@ struct Node {
 
 // Function to calculate the length of the linked li123w
 int getLength(struct Node* head) {
-    int count = 0;
-    while (head != NULL) {
-        count++;
-        head = head->next;
-    }
-    return count;
+   
 }

@@ -12,6 +12,7 @@ public class Solution {
     }
 
     public static int getLength(Node head) {
+        return 0;
        
     }
 }

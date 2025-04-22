@@ -13,7 +13,7 @@ class Solution:
    #qq
    
    
-   #the below code is also a question so dont change the below code
+   #the below code is also a question so dont change the below code .
     def create_linked_list(self, arr):
         if not arr:
             return None

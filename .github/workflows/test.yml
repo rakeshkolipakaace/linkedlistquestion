@@ -135,12 +135,13 @@ jobs:
           export PYTHONPATH=$PWD
           python3 tests/test.py | tee test_results.log
 
-      - name: Compile and Run Java Tests
-        if: env.RUN_JAVA == '1' && env.SOLUTION_COUNT == '1'
-        run: |
-          echo "🚀 Running Java Test Cases..."
-          javac -d . solutions/Solution.java tests/Test.java
-          java tests.Test
+          - name: Compile and Run Java Tests
+          if: env.RUN_JAVA == '1' && env.SOLUTION_COUNT == '1'
+          run: |
+            echo "🚀 Running Java Test Cases..."
+            javac -d . solutions/Solution.java tests/Test.java
+            java tests.Test
+        
 
       - name: Upload Test Results (Python only)
         if: env.SOLUTION_COUNT == '1' && env.RUN_PYTHON == '1'

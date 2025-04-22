@@ -1,11 +1,11 @@
-# Linked list class
-class LinkedList:
-    def __init__(self):
-        self.head = None
-        self.tail = None
+# solution.py
+
+class Node:
+    def __init__(self, data):
+        self.data = data
+        self.next = None
 
 class Solution:
-    # Function to count nodes of a linked list.
     def getCount(self, head):
         count = 0
         current = head
@@ -13,3 +13,16 @@ class Solution:
             count += 1
             current = current.next
         return count
+    
+    
+    
+
+    def create_linked_list(self, arr):
+        if not arr:
+            return None
+        head = Node(arr[0])
+        current = head
+        for val in arr[1:]:
+            current.next = Node(val)
+            current = current.next
+        return head
